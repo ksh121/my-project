@@ -1,0 +1,13 @@
+<html layout:decorate="~{layout}">
+  <div layout:fragment="content">
+    <div style="text-align: center; margin-top: 10px;">
+      <h2>메모 삭제 확인</h2>
+      <p>정말로 이 메모를 삭제하시겠습니까?</p>
+      <form action="/memo/delete" method="post">
+        <input type="hidden" name="memono" th:value="${memoVO.memono}" />
+        <button type="submit" class="btn btn-danger">삭제</button>
+        <button type="button" onclick="history.back();" class="btn btn-secondary">취소</button>
+      </form>
+    </div>
+  </div>
+</html>

@@ -1,0 +1,69 @@
+<!--/* 
+<div th:replace="~{cate/list_all_com::list_all_fragment}"></div> 
+'/cate/list_all_com.html' 파일의 list_all_fragment를 가져다 사용
+*/-->
+<div th:fragment="list_all_fragment"> 
+ <table class="darkmode" style="width: 100%;">
+    <colgroup>
+      <col style='width: 10%;'/>
+      <col style='width: 10%;'/>
+      <col style='width: 20%;'/>
+      <col style='width: 10%;'/>    
+      <col style='width: 5%;'/>
+      <col style='width: 20%;'/>
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="th_bs">순서</th>
+        <th class="th_bs">카테고리</th>
+        <th class="th_bs">곡제목</th>
+        <th class="th_bs">아티스트명</th>
+        <th class="th_bs">난이도</th>
+        <th class="th_bs">자료수</th>
+        <th class="th_bs">등록일</th>
+        <th class="th_bs">기타</th>
+      </tr>
+    </thead>
+    <tbody>
+  <tr th:each="categoVO, status:${list}"> <!-- cateVO 갯수만큼 <tr> 태그가 생성됨 -->
+    <td class="td_bs" th:text="${no - status.index}"></td>
+    <td class="td_bs">
+      <a th:href="@{|/catego/read/${categoVO.categono}?word=${word}&now_page=${now_page}|}" style="display:block;" th:text="${categoVO.name}"></a>
+    </td>
+    <td class="td_bs">
+      <a th:href="@{|/catego/read/${categoVO.categono}?word=${word}&now_page=${now_page}|}" style="display:block;" th:text="${categoVO.title}"></a>
+    </td>
+    <td class="td_bs" th:text="${categoVO.artist}"></td>
+    <td class="td_bs" th:text="${categoVO.difficulty}"></td>
+    <td class="td_bs" th:text="${categoVO.cnt}"></td>
+    <td class="td_bs" th:text="${categoVO.rdate.substring(0, 10)}"></td>
+    <td class="td_bs">
+   
+      
+
+      <a th:href="@{|/contents/list_by_categono?categono=${categoVO.categono}|}"><img src="/catego/images/mydocuments.png" class="icon" title="글 목록"></a>
+      <a th:href="@{|/contents/create?categono=${categoVO.categono}|}"><img src="/catego/images/append.png" class="icon" title="컨텐츠 등록"></a>
+      
+      <span th:if="${categoVO.visible == 'Y'}">
+        <a th:href="@{|/catego/update_visible_n/${categoVO.categono}?word=${word}&now_page=${now_page}|}"><img src="/catego/images/show.png" class="icon" title="출력"></a>
+      </span>
+      <span th:if="${categoVO.visible == 'N'}">
+        <a th:href="@{|/catego/update_visible_y/${categoVO.categono}?word=${word}&now_page=${now_page}|}"><img src="/catego/images/hide.png" class="icon" title="숨김"></a>
+      </span>
+  
+      <span th:text="${categoVO.seqno}"></span>
+      <a th:href="@{|/catego/update_seqno_forward/${categoVO.categono}?word=${word}&now_page=${now_page}|}"><img src="/catego/images/decrease.png" class="icon" title="우선순위 높임"></a>
+      <a th:href="@{|/catego/update_seqno_backward/${categoVO.categono}?word=${word}&now_page=${now_page}|}"><img src="/catego/images/increase.png" class="icon" title="우선순위 낮춤"></a>
+      <a th:href="@{|/catego/update/${categoVO.categono}?word=${word}&now_page=${now_page}|}"><img src='/catego/images/update.png' class="icon" title="수정"></a>
+      <a th:href="@{|/catego/delete/${categoVO.categono}?word=${word}&now_page=${now_page}|}"><img src="/catego/images/delete.png" class="icon" title="삭제"></a>              
+    </td>
+  </tr>
+</tbody>
+  </table>
+  
+
+  
+  <!-- 페이지 버튼 목록 출력 시작 -->
+  <div class="Bottom_menu" th:utext="${paging}"></div> 
+  <!-- 페이지 버튼 목록 출력 종료 -->
+</div>

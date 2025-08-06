@@ -1,0 +1,18 @@
+<html layout:decorate="~{layout}">
+  <div layout:fragment="content">
+  
+    <h2>메모 작성</h2>
+    <form action="/memo/create" method="post">
+      <div class="form-group">
+        <label for="title">메모 제목</label>
+        <input type="text" id="title" name="title" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="content">메모 내용</label>
+        <textarea id="content" name="content" class="form-control" rows="5" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">작성하기</button>
+    </form>
+  </div>
+</html>

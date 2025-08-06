@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class="title_line">카테고리 조회 <span th:if="${word != null and word != ''}" th:text="|${word} ${list_search_count} 건|"></span> </div> 
+  
+  <aside class="aside_right">
+    <a href="javascript: location.reload();">새로 고침</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/catego/list_all|}">목록</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/catego/update/${categoVO.categono}|}">수정</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/catego/delete/${categoVO.categono}|}">삭제</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/catego/create|}">등록</a>
+    <span class="menu_divide"></span>
+  </aside>
+  
+  <div th:replace = "~{catego/list_search_com::list_search_fragment}"></div>
+
+  <div class="container mt-3" style="width: 60%; margin: 5px auto;"> <!--/* mt-3: margin top 16px */-->
+    <ul class="list-group list-group-flush">
+    
+      <li class="list-group-item" style="display: flex; justify-content: center; align-items: center;">카테고리 : <span th:text="${categoVO.name}" style="margin-right:20px;"></span>
+        곡 제목 : <span th:text="${categoVO.title}" style="margin-right:20px;"></span>
+        아티스트명 : <span th:text="${categoVO.artist}" style="margin-right:20px;"></span></li>
+      <li class="list-group-item" style="display: flex; justify-content: center; align-items: center;">난이도 : <span th:text="${categoVO.difficulty}" style="margin-right:30px;"></span>
+      관련 자료수: <span th:text="${categoVO.cnt}" style="margin-right: 20px;"></span>
+      출력 순서: <span th:text="${categoVO.seqno}" style="margin-right:20px;"></span>
+      출력 모드 : <span th:text="${categoVO.visible}" style="margin-right:30px;"></span>
+      등록일 : <span th:text="${categoVO.rdate}" style="margin-right:30px;"></span></li>
+    </ul>  
+  </div>
+
+  <!-- /* /cate/list_all_com.html 파일의 list_all_fragment를 가져다 사용* /-->
+    <div th:replace="~{catego/list_all_com::list_all_fragment}"></div>
+  
+</div>
+</html>

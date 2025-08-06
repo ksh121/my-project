@@ -1,0 +1,22 @@
+<html layout:decorate="~{layout}">
+  <div layout:fragment="content">
+    <h2>메모 상세</h2>
+    <div>
+      <h3>제목</h3>
+      <p th:text="${memoVO.title}"></p>
+    </div>
+    <div>
+      <h3>내용</h3>
+      <p th:text="${memoVO.content}"></p>
+    </div>
+    <div>
+      <h3>작성일</h3>
+      <p th:text="${#dates.format(memoVO.rdate, 'yyyy-MM-dd HH:mm')}"></p>
+    </div>
+    <div>
+      <a th:href="@{|/memo/update?memono=${memoVO.memono}|}"  class="btn btn-warning">수정</a>
+      <a th:href="@{|/memo/delete?memono=${memoVO.memono}|}"  class="btn btn-danger">삭제</a>
+      <a href="/memo/list" class="btn btn-secondary">목록으로</a>
+    </div>
+  </div>
+</html>

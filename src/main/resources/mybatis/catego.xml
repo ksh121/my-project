@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.catego.CategoDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
+  <insert id="create" parameterType="dev.mvc.catego.CategoVO">
+    INSERT INTO catego(categono, name, title, artist, difficulty, visible, rdate, seqno, cnt)
+    VALUES(CATEGO_SEQ.nextval, #{name}, #{title}, #{artist}, #{difficulty}, #{visible}, SYSDATE, #{seqno}, 0)
+  </insert>
+  
+  <!-- 레코드 갯수만큼 CategoVO class 객체가 생성됨 -> ArrayList<CategoVO> 생성됨 -->
+  <select id = "list_all" resultType="dev.mvc.catego.CategoVO">
+    SELECT categono, name, title, artist, difficulty, visible, rdate, seqno, cnt
+    FROM catego
+    ORDER BY seqno ASC
+  </select>
+  
+  <!-- 하나의 CategoVO class 객체가 생성됨 -->
+  <select id = "read" resultType="dev.mvc.catego.CategoVO" parameterType="Integer">
+    SELECT categono, name, title, artist, difficulty, visible, rdate, seqno, cnt
+    FROM catego
+    WHERE categono = #{categono}
+  </select>
+  
+  <update id="update" parameterType="dev.mvc.catego.CategoVO">
+    UPDATE catego
+    SET name=#{name}, title= #{title},  artist= #{artist}, difficulty= #{difficulty}, cnt=#{cnt}, visible=#{visible}, rdate=SYSDATE, seqno=#{seqno}
+    WHERE categono=#{categono}
+  </update>
+  
+  <delete id="delete" parameterType="dev.mvc.catego.CategoVO">
+    DELETE FROM catego WHERE categono=#{categono}
+  </delete>
+  
+  <!-- 10 ->1로 바꾸는 -->
+   <update id="update_seqno_forward" parameterType="Integer">
+   UPDATE catego SET seqno=seqno-1 WHERE categono=#{categono}
+  </update>
+  
+  <!-- 1 ->10으로 바꾸는 -->
+   <update id="update_seqno_backward" parameterType="Integer">
+    UPDATE catego SET seqno=seqno+1 WHERE categono=#{categono}
+  </update>
+  
+  <!-- 카테고리 공개 설정 -->
+   <update id="update_visible_y" parameterType="Integer">
+   UPDATE catego SET visible='Y' WHERE categono=#{categono}
+  </update>
+  
+  <!-- 카테고리 비공개 설정 -->
+   <update id="update_visible_n" parameterType="Integer">
+   UPDATE catego SET visible='N' WHERE categono=#{categono}
+  </update>
+  
+  <!-- 공개된 대분류만 출력 -->
+ <select id = "list_all_grp_y" resultType="dev.mvc.catego.CategoVO">
+  SELECT categono, name, title, artist, difficulty, visible, rdate, seqno, cnt
+  FROM catego
+  WHERE title='--' AND visible='Y'
+  ORDER BY seqno ASC
+ </select>
+  
+   <!-- 특정 중분류만 출력 -->
+ <select id = "list_all_name_y" resultType="dev.mvc.catego.CategoVO" parameterType="String">
+  SELECT categono, name, title, artist, difficulty, visible, rdate, seqno, cnt
+  FROM catego
+  WHERE name = #{name} AND title != '--' AND visible='Y'
+  ORDER BY seqno ASC
+ </select>
+ 
+ <!-- 카테고리 그룹 목록 -->
+  <select id = "grpset" resultType="String">
+    SELECT name
+    FROM catego
+    WHERE title = '--'
+    ORDER BY seqno ASC
+  </select>
+  
+  <!-- 검색
+        SQL -> CateVO 객체 레코드 수 만큼 생성 -> ArrayList<cateVO> 객체가 생성되어 CateDAOInter로 리턴  -->
+  <select id="list_search" resultType="dev.mvc.catego.CategoVO" parameterType="String">
+    SELECT categono, name, title, artist, difficulty, visible, rdate, seqno, cnt
+    FROM catego
+    <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
+      WHERE (UPPER(name) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(title) LIKE '%' || UPPER(#{word}) || '%')
+    </if> 
+    ORDER BY seqno ASC
+  </select>
+
+  <!-- 검색 갯수 -->
+  <select id="list_search_count" resultType="Integer" parameterType="String">
+    SELECT COUNT(*) as cnt
+    FROM catego
+    <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
+      WHERE (UPPER(name) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(title) LIKE '%' || UPPER(#{word}) || '%')
+    </if> 
+    ORDER BY seqno ASC
+  </select>
+  
+  <!-- 페이징 -->
+  <!-- 목록 + 페이징 (name별 합산 cnt 포함) -->
+  <select id="list_search_paging" resultType="dev.mvc.catego.CategoVO" parameterType="map">
+  SELECT c.categono, c.name, c.title, c.artist, c.difficulty, c.visible, c.rdate, c.seqno,
+         (
+           CASE 
+             WHEN c.title = '--' THEN 
+               (SELECT COUNT(*) 
+                FROM contents ct 
+                WHERE ct.categono IN (
+                  SELECT categono FROM catego WHERE name = c.name
+                )
+               )
+             ELSE 
+               (SELECT COUNT(*) 
+                FROM contents ct 
+                WHERE ct.categono = c.categono
+               )
+           END
+         ) AS cnt,
+         r
+  FROM (
+    SELECT catego.*, rownum AS r
+    FROM (
+      SELECT * 
+      FROM catego
+      <if test="word != null and word != ''">
+        WHERE (UPPER(name) LIKE '%' || UPPER(#{word}) || '%') 
+           OR (UPPER(title) LIKE '%' || UPPER(#{word}) || '%')
+      </if>
+      ORDER BY seqno ASC
+    ) catego
+  ) c
+  WHERE r BETWEEN #{start_num} AND #{end_num}
+</select>
+
+ <!-- contentsno 수를 기반으로 cnt 갱신 -->
+<update id="updateCntByCategono" parameterType="int">
+  UPDATE catego
+  SET cnt = (
+    SELECT COUNT(*) FROM contents WHERE categono = #{categono}
+  )
+  WHERE categono = #{categono}
+</update>
+
+<!-- name 기준 대분류 cnt 갱신 -->
+<update id="updateCntByName" parameterType="string">
+  UPDATE catego
+  SET cnt = (
+    SELECT COUNT(*) 
+    FROM contents 
+    WHERE categono IN (
+      SELECT categono FROM catego WHERE name = #{name}
+    )
+  )
+  WHERE name = #{name} AND title = '--'
+</update>
+
+
+
+
+
+
+
+
+  
+  
+  
+</mapper>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<head>
+    <link href="/css/style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+  <div layout:fragment="content" >
+  
+    
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>메모 목록</h2>
+      <a href="/memo/create" class="btn btn-success">메모 작성</a>
+    </div>
+
+    <table class="darkmode" style="width:100%; text-align: center;">
+    <colgroup>
+      <col style='width: 10%;'/>
+      <col style='width: 20%;'/>
+      <col style='width: 20%;'/>
+      <col style='width: 10%;'/>    
+    </colgroup>
+      <thead class="table-light">
+        <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성일</th>
+          <th>작업</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="memo : ${memoList}"
+    th:onclick="|location.href='/memo/read?memono=${memo.memono}'|"
+    style="cursor: pointer;">
+          <td th:text="${memo.memono}"></td>
+          <td th:text="${memo.title}"></td>
+          <td th:text="${#dates.format(memo.rdate, 'yyyy-MM-dd HH:mm')}"></td>
+          <td>
+            <div class="btn-group" role="group">
+              <a th:href="@{|/memo/update?memono=${memo.memono}|}"> <img src='/users/images/update.png' title='수정' class="icon"></a>
+              <a th:href="@{|/memo/delete?memono=${memo.memono}|}"><img src='/users/images/delete.png' title='삭제' class="icon"></a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+  </body>
+</html>

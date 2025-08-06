@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.memo.MemoDAOInter">
+
+  <!-- 등록 -->
+  <insert id="create" parameterType="dev.mvc.memo.MemoVO">
+    INSERT INTO memo(memono, title, content, userno)
+    VALUES (memo_seq.NEXTVAL, #{title}, #{content}, #{userno})
+  </insert>
+
+  <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.memo.MemoVO">
+    SELECT memono, title, content, rdate, userno
+    FROM memo
+    ORDER BY memono DESC
+  </select>
+
+  <!-- 상세 조회 -->
+  <select id="read" parameterType="int" resultType="dev.mvc.memo.MemoVO">
+    SELECT memono, title, content, rdate, userno
+    FROM memo
+    WHERE memono = #{memono}
+  </select>
+
+  <!-- 수정 -->
+  <update id="update" parameterType="dev.mvc.memo.MemoVO">
+    UPDATE memo
+    SET title = #{title},
+        content = #{content}
+    WHERE memono = #{memono}
+  </update>
+
+  <!-- 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM memo
+    WHERE memono = #{memono}
+  </delete>
+
+</mapper>
